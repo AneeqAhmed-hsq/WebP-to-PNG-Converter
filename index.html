@@ -4,973 +4,449 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebP to PNG Converter</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-
+        
         body {
-            background-color: #f5f5f5;
-            color: #333;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            padding: 10px;
+            line-height: 1.4;
         }
-
-        body.dark-mode {
-            background-color: #121212;
-            color: #f0f0f0;
-        }
-
+        
         .container {
-            width: 100%;
-            max-width: 800px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            padding: 30px;
+            max-width: 600px;
             margin: 0 auto;
-            transition: background-color 0.3s;
-        }
-
-        .dark-mode .container {
-            background-color: #1e1e1e;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Header and title */
-        .tool-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eaeaea;
-        }
-
-        .dark-mode .tool-header {
-            border-bottom-color: #333;
-        }
-
-        .tool-title {
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(90deg, #00b4d8, #0077b6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .dark-mode .tool-title {
-            background: linear-gradient(90deg, #48cae4, #0096c7);
-            -webkit-background-clip: text;
-            background-clip: text;
-        }
-
-        .mode-toggle {
-            background-color: #f0f0f0;
-            border: none;
-            border-radius: 20px;
-            width: 50px;
-            height: 24px;
-            position: relative;
-            cursor: pointer;
-            padding: 2px;
-            transition: background-color 0.3s;
-        }
-
-        .dark-mode .mode-toggle {
-            background-color: #333;
-        }
-
-        .toggle-circle {
-            width: 20px;
-            height: 20px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            position: absolute;
-            left: 2px;
-            transition: transform 0.3s, background-color 0.3s;
-        }
-
-        .dark-mode .toggle-circle {
-            transform: translateX(26px);
-            background-color: #48cae4;
-        }
-
-        /* Instructions */
-        .instructions {
-            background-color: #f9f9f9;
+            background: white;
             border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 30px;
-            font-size: 14px;
-            line-height: 1.5;
-            border-left: 4px solid #00b4d8;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .dark-mode .instructions {
-            background-color: #2a2a2a;
-            border-left-color: #48cae4;
-        }
-
-        /* Main content layout */
-        .tool-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        @media (min-width: 768px) {
-            .tool-content {
-                flex-direction: row;
-            }
-        }
-
-        /* Input and output sections */
-        .input-section, .output-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .section-title i {
-            color: #00b4d8;
-        }
-
-        .dark-mode .section-title i {
-            color: #48cae4;
-        }
-
-        /* File upload area */
-        .upload-area {
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            padding: 40px 20px;
+        
+        h1 {
+            color: #2196F3;
+            font-size: 22px;
+            margin-bottom: 20px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background-color: #fafafa;
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
         }
-
-        .dark-mode .upload-area {
-            background-color: #2a2a2a;
-            border-color: #444;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: #00b4d8;
-            background-color: rgba(0, 180, 216, 0.05);
-        }
-
-        .dark-mode .upload-area:hover, .dark-mode .upload-area.dragover {
-            border-color: #48cae4;
-            background-color: rgba(72, 202, 228, 0.1);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            color: #00b4d8;
-            margin-bottom: 15px;
-        }
-
-        .dark-mode .upload-icon {
-            color: #48cae4;
-        }
-
-        .upload-text {
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .upload-subtext {
-            font-size: 14px;
-            color: #666;
+        
+        .upload-section {
+            text-align: center;
             margin-bottom: 20px;
         }
-
-        .dark-mode .upload-subtext {
-            color: #aaa;
+        
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 10px;
         }
-
-        .upload-btn {
-            background-color: #00b4d8;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 10px 24px;
-            font-weight: 600;
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
         }
-
-        .upload-btn:hover {
-            background-color: #0096c7;
-            transform: translateY(-2px);
-        }
-
-        .upload-btn:active {
-            transform: translateY(0);
-        }
-
-        .dark-mode .upload-btn {
-            background-color: #48cae4;
-        }
-
-        .dark-mode .upload-btn:hover {
-            background-color: #38b6d8;
-        }
-
-        /* Image preview area */
-        .preview-area {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: #fafafa;
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .dark-mode .preview-area {
-            background-color: #2a2a2a;
-            border-color: #444;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 6px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .preview-placeholder {
-            color: #888;
-            font-size: 14px;
-        }
-
-        .dark-mode .preview-placeholder {
-            color: #aaa;
-        }
-
-        /* File info */
-        .file-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 15px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .info-label {
-            color: #666;
-        }
-
-        .dark-mode .info-label {
-            color: #aaa;
-        }
-
-        .info-value {
-            font-weight: 500;
-        }
-
-        /* Format options */
-        .format-options {
-            margin-top: 20px;
-            width: 100%;
-            display: none;
-        }
-
-        .format-label {
+        
+        .file-label {
             display: block;
-            margin-bottom: 12px;
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .format-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .format-btn {
-            flex: 1;
-            min-width: 80px;
-            padding: 10px 15px;
-            background-color: #f0f0f0;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .dark-mode .format-btn {
-            background-color: #2a2a2a;
-            border-color: #444;
-            color: #f0f0f0;
-        }
-
-        .format-btn:hover {
-            border-color: #00b4d8;
-            transform: translateY(-2px);
-        }
-
-        .format-btn.active {
-            background-color: #00b4d8;
-            border-color: #00b4d8;
+            background: #2196F3;
             color: white;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
         }
-
-        .dark-mode .format-btn.active {
-            background-color: #48cae4;
-            border-color: #48cae4;
+        
+        .file-label:hover {
+            background: #0b7dda;
         }
-
-        /* Compression options */
-        .compression-options {
-            margin-top: 20px;
-            width: 100%;
-            display: none;
+        
+        .selected-files {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+            min-height: 20px;
         }
-
-        .compression-label {
+        
+        .quality-section {
+            margin: 15px 0;
+        }
+        
+        .quality-label {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-size: 14px;
-        }
-
-        .compression-value {
-            font-weight: 600;
-            color: #00b4d8;
-        }
-
-        .dark-mode .compression-value {
-            color: #48cae4;
-        }
-
-        .compression-slider {
-            width: 100%;
-            height: 6px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: #e0e0e0;
-            border-radius: 3px;
-            outline: none;
-        }
-
-        .dark-mode .compression-slider {
-            background: #444;
-        }
-
-        .compression-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #00b4d8;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .dark-mode .compression-slider::-webkit-slider-thumb {
-            background: #48cae4;
-        }
-
-        .compression-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #00b4d8;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .dark-mode .compression-slider::-moz-range-thumb {
-            background: #48cae4;
-        }
-
-        /* Controls */
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .control-btn {
-            padding: 10px 18px;
-            border-radius: 6px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-            min-width: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .control-btn:active {
-            transform: translateY(0);
-        }
-
-        .dark-mode .control-btn:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .convert-btn {
-            background-color: #00b4d8;
-            color: white;
-        }
-
-        .convert-btn:hover {
-            background-color: #0096c7;
-        }
-
-        .dark-mode .convert-btn {
-            background-color: #48cae4;
-        }
-
-        .dark-mode .convert-btn:hover {
-            background-color: #38b6d8;
-        }
-
-        .download-btn {
-            background-color: #10b981;
-            color: white;
-        }
-
-        .download-btn:hover {
-            background-color: #0da271;
-        }
-
-        .clear-btn {
-            background-color: #f0f0f0;
             color: #333;
         }
-
-        .clear-btn:hover {
-            background-color: #e0e0e0;
+        
+        .quality-value {
+            color: #2196F3;
+            font-weight: bold;
         }
-
-        .dark-mode .clear-btn {
-            background-color: #333;
-            color: #f0f0f0;
+        
+        .quality-slider {
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
         }
-
-        .dark-mode .clear-btn:hover {
-            background-color: #444;
+        
+        .quality-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2196F3;
+            border-radius: 50%;
+            cursor: pointer;
         }
-
-        /* Conversion status */
-        .conversion-status {
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-top: 20px;
+        }
+        
+        .btn {
             padding: 12px;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: 500;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-convert {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-convert:hover {
+            background: #0b7dda;
+        }
+        
+        .btn-reset {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
             display: none;
-            animation: fadeIn 0.5s;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        
         .status-success {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: #e8f4fd;
+            color: #2196F3;
+            border: 1px solid #bbdefb;
         }
-
+        
         .status-error {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+            background: #ffebee;
+            color: #f44336;
+            border: 1px solid #ffcdd2;
         }
-
-        /* Footer */
-        .tool-footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
+        
+        .info-text {
+            font-size: 12px;
+            color: #666;
             text-align: center;
-            font-size: 13px;
-            color: #888;
+            margin-top: 15px;
+            line-height: 1.3;
         }
-
-        .dark-mode .tool-footer {
-            border-top-color: #333;
-            color: #aaa;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 767px) {
+        
+        @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 15px;
             }
             
-            .tool-title {
-                font-size: 24px;
+            h1 {
+                font-size: 20px;
+                margin-bottom: 15px;
             }
             
-            .controls {
-                flex-direction: column;
-            }
-            
-            .control-btn {
-                width: 100%;
-            }
-            
-            .format-buttons {
-                flex-direction: column;
+            .buttons {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="tool-header">
-            <h1 class="tool-title">WebP to PNG Converter</h1>
-            <button class="mode-toggle" id="modeToggle">
-                <div class="toggle-circle"></div>
+        <h1>WebP to PNG Converter</h1>
+        
+        <div class="upload-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" class="file-input" accept=".webp,image/webp" multiple>
+                <label for="fileInput" class="file-label">
+                    📁 Select WebP Files
+                </label>
+            </div>
+            <div id="selectedFiles" class="selected-files"></div>
+        </div>
+        
+        <div class="quality-section">
+            <div class="quality-label">
+                <span>Quality:</span>
+                <span id="qualityValue" class="quality-value">100%</span>
+            </div>
+            <input type="range" id="qualitySlider" class="quality-slider" min="1" max="100" value="100">
+        </div>
+        
+        <div class="buttons">
+            <button id="convertBtn" class="btn btn-convert" disabled>
+                Convert to PNG
+            </button>
+            <button id="resetBtn" class="btn btn-reset">
+                Clear All
             </button>
         </div>
-
-        <div class="instructions">
-            <p>Upload WebP images and convert them to PNG format instantly. All processing happens in your browser - your images never leave your device. Choose compression level for optimal file size.</p>
-        </div>
-
-        <div class="tool-content">
-            <div class="input-section">
-                <h2 class="section-title">
-                    <i>📤</i> Input (WebP)
-                </h2>
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <p class="upload-text">Drop your WebP files here</p>
-                    <p class="upload-subtext">or click to browse</p>
-                    <button class="upload-btn">Choose Files</button>
-                    <input type="file" id="fileInput" accept=".webp" multiple style="display: none;">
-                </div>
-
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <div class="info-row">
-                        <span class="info-label">File name:</span>
-                        <span class="info-value" id="fileName">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">File size:</span>
-                        <span class="info-value" id="fileSize">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Dimensions:</span>
-                        <span class="info-value" id="fileDimensions">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Format:</span>
-                        <span class="info-value" id="fileFormat">WebP</span>
-                    </div>
-                </div>
-
-                <div class="format-options" id="formatOptions">
-                    <div class="format-label">PNG Format:</div>
-                    <div class="format-buttons">
-                        <button class="format-btn active" data-format="png">Standard PNG</button>
-                        <button class="format-btn" data-format="png-transparent">PNG-24 (Transparent)</button>
-                        <button class="format-btn" data-format="png-8">PNG-8 (Smaller)</button>
-                    </div>
-                </div>
-
-                <div class="compression-options" id="compressionOptions">
-                    <div class="compression-label">
-                        <span>Compression Level:</span>
-                        <span class="compression-value" id="compressionValue">5</span>
-                    </div>
-                    <input type="range" min="0" max="9" value="5" class="compression-slider" id="compressionSlider">
-                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
-                        <span>Smallest</span>
-                        <span>Best Quality</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="output-section">
-                <h2 class="section-title">
-                    <i>📥</i> Output (PNG)
-                </h2>
-                <div class="preview-area" id="previewArea">
-                    <img class="preview-image" id="previewImage" src="" alt="Converted PNG preview">
-                    <p class="preview-placeholder" id="previewPlaceholder">Converted PNG will appear here</p>
-                </div>
-
-                <div class="conversion-status" id="conversionStatus"></div>
-
-                <div class="controls">
-                    <button class="control-btn convert-btn" id="convertBtn">
-                        <span>Convert to PNG</span>
-                    </button>
-                    <button class="control-btn download-btn" id="downloadBtn" disabled>
-                        <span>Download PNG</span>
-                    </button>
-                    <button class="control-btn clear-btn" id="clearBtn">
-                        <span>Clear All</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="tool-footer">
-            <p>Professional WebP to PNG Converter • All processing done client-side • No data uploaded to servers</p>
+        
+        <div id="statusMessage" class="status"></div>
+        
+        <div class="info-text">
+            Convert WebP images to PNG format. All processing happens in your browser.
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <script>
-        // DOM elements
-        const uploadArea = document.getElementById('uploadArea');
+        // DOM Elements
         const fileInput = document.getElementById('fileInput');
-        const previewArea = document.getElementById('previewArea');
-        const previewImage = document.getElementById('previewImage');
-        const previewPlaceholder = document.getElementById('previewPlaceholder');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const fileDimensions = document.getElementById('fileDimensions');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const selectedFiles = document.getElementById('selectedFiles');
         const convertBtn = document.getElementById('convertBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const conversionStatus = document.getElementById('conversionStatus');
-        const modeToggle = document.getElementById('modeToggle');
-        const formatOptions = document.getElementById('formatOptions');
-        const formatButtons = document.querySelectorAll('.format-btn');
-        const compressionOptions = document.getElementById('compressionOptions');
-        const compressionSlider = document.getElementById('compressionSlider');
-        const compressionValue = document.getElementById('compressionValue');
+        const resetBtn = document.getElementById('resetBtn');
+        const statusMessage = document.getElementById('statusMessage');
         
-        // State variables
-        let originalImage = null;
-        let convertedImageUrl = null;
-        let originalFileName = '';
-        let selectedFormat = 'png';
-        let compressionLevel = 5; // 0-9 where 0 is no compression, 9 is max
+        // Variables
+        let uploadedFiles = [];
+        let currentQuality = 100;
         
-        // Dark mode toggle
-        modeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-        });
+        // Initialize
+        updateFileDisplay();
         
-        // Check for saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-        }
+        // Event Listeners
+        fileInput.addEventListener('change', handleFileSelect);
+        qualitySlider.addEventListener('input', updateQuality);
+        convertBtn.addEventListener('click', convertImages);
+        resetBtn.addEventListener('click', resetAll);
         
-        // Format selection
-        formatButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                formatButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedFormat = btn.dataset.format;
-                
-                // If there's already a converted image, re-convert with new format
-                if (convertedImageUrl && originalImage) {
-                    convertToPng();
-                }
-            });
-        });
-        
-        // Compression slider update
-        compressionSlider.addEventListener('input', (e) => {
-            compressionLevel = parseInt(e.target.value);
-            compressionValue.textContent = compressionLevel;
-            
-            // If there's already a converted image, re-convert with new compression
-            if (convertedImageUrl && originalImage) {
-                convertToPng();
-            }
-        });
-        
-        // File upload area interactions
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-        
-        // Handle drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
+        // Drag and drop functionality
+        const fileLabel = document.querySelector('.file-label');
+        fileLabel.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('dragover');
+            fileLabel.style.background = '#0b7dda';
         });
         
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
+        fileLabel.addEventListener('dragleave', (e) => {
             e.preventDefault();
-            uploadArea.classList.remove('dragover');
+            fileLabel.style.background = '#2196F3';
+        });
+        
+        fileLabel.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileLabel.style.background = '#2196F3';
             
             if (e.dataTransfer.files.length) {
-                handleFiles(e.dataTransfer.files);
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
             }
         });
         
-        // Handle file selection
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                handleFiles(e.target.files);
-            }
-        });
-        
-        // Handle selected files
-        function handleFiles(files) {
-            // Only process the first file
-            const file = files[0];
+        // Functions
+        function handleFileSelect() {
+            if (!fileInput.files.length) return;
             
-            // Check if it's a WebP image
-            if (!file.type.match('image/webp') && !file.name.match(/\.webp$/i)) {
-                showStatus('Please select a WebP image file.', 'error');
-                return;
+            uploadedFiles = Array.from(fileInput.files);
+            
+            // Filter only WebP files
+            const webpFiles = uploadedFiles.filter(file => 
+                file.type === 'image/webp' || file.name.toLowerCase().endsWith('.webp')
+            );
+            
+            if (webpFiles.length !== uploadedFiles.length) {
+                showStatus('Some files are not WebP format and were skipped', 'error');
             }
             
-            originalFileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+            uploadedFiles = webpFiles;
+            updateFileDisplay();
+            convertBtn.disabled = uploadedFiles.length === 0;
             
-            // Display file info
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            fileInfo.style.display = 'flex';
-            formatOptions.style.display = 'block';
-            compressionOptions.style.display = 'block';
-            
-            // Read and display the image
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    // Store original image
-                    originalImage = img;
-                    
-                    // Display dimensions
-                    fileDimensions.textContent = `${img.width} × ${img.height}px`;
-                    
-                    // Reset conversion status
-                    conversionStatus.style.display = 'none';
-                    
-                    // Enable convert button
-                    convertBtn.disabled = false;
-                    
-                    // Reset download button
-                    downloadBtn.disabled = true;
-                    downloadBtn.innerHTML = '<span>Download PNG</span>';
-                    
-                    // Show preview of original image
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                    previewPlaceholder.style.display = 'none';
-                };
-                img.onerror = () => {
-                    showStatus('Error loading WebP image. The file might be corrupted or not a valid WebP.', 'error');
-                };
-                img.src = e.target.result;
-            };
-            reader.onerror = () => {
-                showStatus('Error reading file. Please try another WebP image.', 'error');
-            };
-            reader.readAsDataURL(file);
+            if (uploadedFiles.length > 0) {
+                showStatus(`${uploadedFiles.length} WebP file(s) selected`, 'success');
+            }
         }
         
-        // Convert WebP to PNG
-        function convertToPng() {
-            if (!originalImage) return;
-            
-            // Create canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = originalImage.width;
-            canvas.height = originalImage.height;
-            
-            const ctx = canvas.getContext('2d');
-            
-            // Draw the WebP image
-            ctx.drawImage(originalImage, 0, 0);
-            
-            // Convert to PNG data URL
-            // Note: For PNG-8 simulation, we'd need a more complex solution
-            // This is a simplified version
-            convertedImageUrl = canvas.toDataURL('image/png');
-            
-            // For PNG-8 simulation, we can reduce colors (simplified approach)
-            if (selectedFormat === 'png-8') {
-                // This is a basic simulation - real PNG-8 conversion would be more complex
-                // We're just using the standard PNG conversion
-                convertedImageUrl = canvas.toDataURL('image/png');
-            }
-            
-            // Update preview with converted image
-            previewImage.src = convertedImageUrl;
-            
-            // Enable download button
-            downloadBtn.disabled = false;
+        function updateQuality() {
+            currentQuality = parseInt(qualitySlider.value);
+            qualityValue.textContent = `${currentQuality}%`;
         }
         
-        // Convert button click handler
-        convertBtn.addEventListener('click', () => {
-            if (!originalImage) {
-                showStatus('Please upload a WebP image first.', 'error');
+        function updateFileDisplay() {
+            if (uploadedFiles.length === 0) {
+                selectedFiles.textContent = 'No files selected';
                 return;
             }
             
-            // Show converting status
-            showStatus('Converting WebP to PNG...', 'success');
+            const fileList = uploadedFiles.map(file => file.name).join(', ');
+            const displayText = uploadedFiles.length > 3 
+                ? `${uploadedFiles.length} WebP files selected` 
+                : fileList;
             
-            // Simulate conversion process
-            setTimeout(() => {
-                convertToPng();
-                
-                // Show success status
-                let formatText = 'Standard PNG';
-                if (selectedFormat === 'png-transparent') formatText = 'PNG-24 (Transparent)';
-                if (selectedFormat === 'png-8') formatText = 'PNG-8 (Smaller)';
-                
-                showStatus(`Conversion successful! Format: ${formatText}`, 'success');
-            }, 600);
-        });
+            selectedFiles.textContent = displayText;
+        }
         
-        // Download converted PNG
-        downloadBtn.addEventListener('click', () => {
-            if (!convertedImageUrl) {
-                showStatus('No converted image available.', 'error');
-                return;
-            }
+        async function convertImages() {
+            if (!uploadedFiles.length) return;
             
-            // Create a temporary link element
-            const link = document.createElement('a');
-            link.href = convertedImageUrl;
-            link.download = `${originalFileName || 'converted'}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Show download confirmation
-            showStatus('Download started!', 'success');
-            
-            // Change button text briefly
-            const originalText = downloadBtn.innerHTML;
-            downloadBtn.innerHTML = '<span>✓ Downloaded</span>';
-            
-            setTimeout(() => {
-                downloadBtn.innerHTML = originalText;
-            }, 2000);
-        });
-        
-        // Clear all
-        clearBtn.addEventListener('click', () => {
-            // Reset everything
-            originalImage = null;
-            convertedImageUrl = null;
-            originalFileName = '';
-            selectedFormat = 'png';
-            compressionLevel = 5;
-            
-            // Reset UI
-            fileInput.value = '';
-            previewImage.src = '';
-            previewImage.style.display = 'none';
-            previewPlaceholder.style.display = 'block';
-            fileInfo.style.display = 'none';
-            formatOptions.style.display = 'none';
-            compressionOptions.style.display = 'none';
-            conversionStatus.style.display = 'none';
-            compressionSlider.value = 5;
-            compressionValue.textContent = '5';
-            
-            // Reset format buttons
-            formatButtons.forEach(btn => btn.classList.remove('active'));
-            formatButtons[0].classList.add('active');
-            
-            // Reset buttons
+            // Disable button and show loading
             convertBtn.disabled = true;
-            downloadBtn.disabled = true;
-            downloadBtn.innerHTML = '<span>Download PNG</span>';
+            convertBtn.textContent = 'Converting...';
             
-            // Show cleared status briefly
-            showStatus('All cleared. Upload a new WebP image.', 'success');
-            setTimeout(() => {
-                conversionStatus.style.display = 'none';
-            }, 3000);
-        });
+            try {
+                const zip = new JSZip();
+                let convertedCount = 0;
+                
+                // Convert each image
+                for (let i = 0; i < uploadedFiles.length; i++) {
+                    const file = uploadedFiles[i];
+                    
+                    try {
+                        const pngBlob = await convertToPNG(file, currentQuality);
+                        
+                        // Add to ZIP
+                        const fileName = file.name.replace(/\.webp$/i, "") + '.png';
+                        zip.file(fileName, pngBlob);
+                        convertedCount++;
+                        
+                    } catch (error) {
+                        console.error(`Error converting ${file.name}:`, error);
+                    }
+                }
+                
+                if (convertedCount === 0) {
+                    throw new Error('No WebP images could be converted');
+                }
+                
+                // Generate ZIP file
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = `png_images_${Date.now()}.zip`;
+                
+                // Trigger download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up
+                URL.revokeObjectURL(link.href);
+                
+                // Show success message
+                showStatus(`✅ Converted ${convertedCount} WebP file(s) to PNG format`, 'success');
+                
+            } catch (error) {
+                console.error('Conversion error:', error);
+                showStatus('❌ Error converting WebP images. Please try again.', 'error');
+            } finally {
+                // Reset button
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Convert to PNG';
+            }
+        }
         
-        // Show status message
+        function convertToPNG(file, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        
+                        // For transparent images
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // Draw the WebP image
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Convert to PNG
+                        canvas.toBlob(
+                            function(blob) {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    reject(new Error('PNG conversion failed'));
+                                }
+                            },
+                            'image/png',
+                            quality / 100
+                        );
+                    };
+                    
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
         function showStatus(message, type) {
-            conversionStatus.textContent = message;
-            conversionStatus.className = 'conversion-status';
-            conversionStatus.classList.add(`status-${type}`);
-            conversionStatus.style.display = 'block';
+            statusMessage.textContent = message;
+            statusMessage.className = `status status-${type}`;
+            statusMessage.style.display = 'block';
+            
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 4000);
         }
         
-        // Format file size
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        function resetAll() {
+            uploadedFiles = [];
+            fileInput.value = '';
+            updateFileDisplay();
+            convertBtn.disabled = true;
+            qualitySlider.value = 100;
+            qualityValue.textContent = '100%';
+            statusMessage.style.display = 'none';
+            showStatus('Cleared all files', 'success');
         }
-        
-        // Initialize with a disabled convert button
-        convertBtn.disabled = true;
     </script>
 </body>
 </html>
